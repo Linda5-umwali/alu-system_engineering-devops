@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#Automates resetting Nginx's default site by recreating its symlink, restarting the server, and testing the setup with a curl request
 rm /etc/nginx/sites-enabled/default
 cd /etc/nginx/sites-enabled/
 ln -s ../sites-available/default .
