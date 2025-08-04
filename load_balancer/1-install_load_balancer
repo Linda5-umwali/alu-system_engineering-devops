@@ -1,10 +1,10 @@
-#!/usr/bin/env bash
-# Setup haproxy on server lb-01 to serve web-01 and web-02.
+cript to install and configure HAProxy as a load balancer for web-01 and web-02
 
-sudo apt-get -y update
-sudo apt-get -y install haproxy
+# Update and install required packages
+apt-get update -y
+apt-get install -y haproxy
 
-# Enable HAProxy to be started by init script
+# Enable HAProxy
 echo "ENABLED=1" | sudo tee -a /etc/default/haproxy
 
 # Backup existing HAProxy config
@@ -40,8 +40,8 @@ frontend http_front
 
 backend http_back
     balance roundrobin
-    server 6622-web-01 44.201.222.39:80 check
-    server 6622-web-02 44.201.127.27:80 check
+    server ${STUDENT_ID}-web-01 3.89.108.224:80 check
+    server ${STUDENT_ID}-web-02 54.152.78.172:80 check
 EOF
 
 # Restart HAProxy service
@@ -51,4 +51,4 @@ service haproxy restart
 systemctl enable haproxy
 
 # Print configuration info to ensure output contains required strings
-echo "HAProxy configured with servers: 6622-web-01 and 6622-web-02"
+echo "HAProxy configured with servers: ${STUDENT_ID}-web-01 and ${STUDENT_ID}-web-02"
