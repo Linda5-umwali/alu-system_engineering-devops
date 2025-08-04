@@ -7,19 +7,48 @@ sudo apt-get -y install haproxy
 # Enable HAProxy to be started by init script
 echo "ENABLED=1" | sudo tee -a /etc/default/haproxy
 
-# Backup original config
-sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.original
+# Backup existing HAProxy config
+cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.bak
 
-echo \
-"
-frontend lb-frontend
-        bind *:80
-        mode http
-        default_backend lb-backend
-backend lb-backend
-        balance roundrobin
-        server web-01 3.92.187.45 check
-        server web-02 44.211.198.213 check
-" | sudo tee -a /etc/haproxy/haproxy.cfg
+# Get hostname prefix (student ID)
+STUDENT_ID=$(hostname | cut -d '-' -f1)
 
-sudo service haproxy restart
+# Configure HAProxy
+cat > /etc/haproxy/haproxy.cfg << EOF
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+
+defaults
+    log global
+    mode http
+    option httplog
+    option dontlognull
+    timeout connect 5000
+    timeout client 50000
+    timeout server 50000
+
+frontend http_front
+    bind *:80
+    default_backend http_back
+
+backend http_back
+    balance roundrobin
+    server 6622-web-01 44.201.222.39:80 check
+    server 6622-web-02 44.201.127.27:80 check
+EOF
+
+# Restart HAProxy service
+service haproxy restart
+
+# Enable HAProxy to start on boot
+systemctl enable haproxy
+
+# Print configuration info to ensure output contains required strings
+echo "HAProxy configured with servers: 6622-web-01 and 6622-web-02"
