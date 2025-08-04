@@ -1,4 +1,5 @@
-cript to install and configure HAProxy as a load balancer for web-01 and web-02
+#!/usr/bin/env bash
+#Script to install and configure HAProxy as a load balancer for web-01 and web-02
 
 # Update and install required packages
 apt-get update -y
