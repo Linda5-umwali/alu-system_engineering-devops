@@ -8,14 +8,8 @@ apt-get install -y haproxy
 # Enable HAProxy
 echo "ENABLED=1" | sudo tee -a /etc/default/haproxy
 
-# Backup existing HAProxy config
-cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.bak
-
-# Get hostname prefix (student ID)
-STUDENT_ID=$(hostname | cut -d '-' -f1)
-
 # Configure HAProxy
-cat > /etc/haproxy/haproxy.cfg << EOF
+cat > /etc/haproxy/haproxy.cfg
 global
     log /dev/log local0
     log /dev/log local1 notice
@@ -41,9 +35,8 @@ frontend http_front
 
 backend http_back
     balance roundrobin
-    server ${STUDENT_ID}-web-01 3.89.108.224:80 check
-    server ${STUDENT_ID}-web-02 54.152.78.172:80 check
-EOF
+    server ${STUDENT_ID}-web-01 44.201.222.39:80 check
+    server ${STUDENT_ID}-web-02 44.201.127.27:80 check
 
 # Restart HAProxy service
 service haproxy restart
